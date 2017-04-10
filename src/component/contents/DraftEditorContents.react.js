@@ -26,6 +26,7 @@ import type {BidiDirection} from 'UnicodeBidiDirection';
 import type ContentBlock from 'ContentBlock';
 
 type Props = {
+  renderPostProcess: (components: any, blocks: any) => any,
   blockRendererFn: Function,
   blockStyleFn: (block: ContentBlock) => string,
   editorState: EditorState,
@@ -93,6 +94,7 @@ class DraftEditorContents extends React.Component {
 
   render(): React.Element<any> {
     const {
+      renderPostProcess,
       blockRenderMap,
       blockRendererFn,
       customStyleMap,
@@ -192,6 +194,7 @@ class DraftEditorContents extends React.Component {
       );
 
       processedBlocks.push({
+        original: block,
         block: child,
         wrapperTemplate,
         key,
@@ -208,12 +211,19 @@ class DraftEditorContents extends React.Component {
 
     // Group contiguous runs of blocks that have the same wrapperTemplate
     const outputBlocks = [];
+
+    // A parallel array to outputBlocks, which contains the original 
+    // content block or an array of content blocks (for wrapped elements)
+    const originalBlocks = []; 
+
     for (let ii = 0; ii < processedBlocks.length; ) {
       const info = processedBlocks[ii];
       if (info.wrapperTemplate) {
         const blocks = [];
+        const originals = [];
         do {
           blocks.push(processedBlocks[ii].block);
+          originals.push(processedBlocks[ii].original);
           ii++;
         } while (
           ii < processedBlocks.length &&
@@ -228,13 +238,15 @@ class DraftEditorContents extends React.Component {
           blocks,
         );
         outputBlocks.push(wrapperElement);
+        originalBlocks.push(originals);
       } else {
         outputBlocks.push(info.block);
+        originalsBlocks.push(info.original);
         ii++;
       }
-    }
+    }    
 
-    return <div data-contents="true">{outputBlocks}</div>;
+    return <div data-contents="true">{renderPostProcess(outputBlocks)}</div>;
   }
 }
 

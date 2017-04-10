@@ -176,6 +176,7 @@ export type DraftEditorProps = {
 };
 
 export type DraftEditorDefaultProps = {
+  renderPostProcess: (components: any, blocks: any) => any,
   blockRenderMap: DraftBlockRenderMap,
   blockRendererFn: (block: ContentBlock) => ?Object,
   blockStyleFn: (block: ContentBlock) => string,

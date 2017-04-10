@@ -70,6 +70,7 @@ class DraftEditor extends React.Component {
   state: State;
 
   static defaultProps: DraftEditorDefaultProps = {
+    renderPostProcess: (components, blocks) => components,
     blockRenderMap: DefaultDraftBlockRenderMap,
     blockRendererFn: emptyFunction.thatReturnsNull,
     blockStyleFn: emptyFunction.thatReturns(''),
@@ -276,6 +277,7 @@ class DraftEditor extends React.Component {
             suppressContentEditableWarning
             tabIndex={this.props.tabIndex}>
             <DraftEditorContents
+              renderPostProcess={this.props.renderPostProcess}
               blockRenderMap={this.props.blockRenderMap}
               blockRendererFn={this.props.blockRendererFn}
               blockStyleFn={this.props.blockStyleFn}
