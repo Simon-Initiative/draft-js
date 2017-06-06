@@ -206,12 +206,12 @@ class DraftEditorContents extends React.Component {
         originalBlocks.push(originals);
       } else {
         outputBlocks.push(info.block);
-        originalsBlocks.push(info.original);
+        originalBlocks.push(info.original);
         ii++;
       }
     }
 
-    return <div data-contents="true">{renderPostProcess(outputBlocks)}</div>;
+    return <div data-contents="true">{this.props.renderPostProcess(outputBlocks)}</div>;
   }
 }
 

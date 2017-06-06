@@ -126,6 +126,14 @@ function editOnPaste(editor: DraftEditor, e: SyntheticClipboardEvent): void {
           internalClipboard.first().getText() === text
         )
       ) {
+
+        if (
+          editor.props.handlePastedFragment &&
+          isEventHandled(editor.props.handlePastedFragment(internalClipboard, editor._latestEditorState))
+        ) {
+          return;
+        }
+
         editor.update(
           insertFragment(editor._latestEditorState, internalClipboard),
         );
