@@ -140,6 +140,12 @@ export type DraftEditorProps = {
     editorState: EditorState,
   ) => DraftHandleValue,
 
+  handleCutFragment?: (
+    fragment: any,
+    editorState: EditorState,
+    editorStatePreview: EditorState,
+  ) => DraftHandleValue,
+
   handlePastedFiles?: (files: Array<Blob>) => DraftHandleValue,
 
   // Handle dropped files

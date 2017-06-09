@@ -15,7 +15,7 @@
 const DraftModifier = require('./DraftModifier');
 const EditorState = require('./EditorState');
 const Style = require('fbjs/lib/Style');
-
+const isEventHandled = require('./isEventHandled');
 const getFragmentFromSelection = require('./getFragmentFromSelection');
 const getScrollPosition = require('fbjs/lib/getScrollPosition');
 
@@ -40,12 +40,17 @@ function editOnCut(editor: DraftEditor, e: SyntheticClipboardEvent): void {
     return;
   }
 
+  const fragment = getFragmentFromSelection(editorState);
+
+  if (editor.props.handleCutFragment && isEventHandled(editor.props.handleCutFragment(fragment, editorState, removeFragment(editorState)))) {
+    return;
+  }
+
   // Track the current scroll position so that it can be forced back in place
   // after the editor regains control of the DOM.
   const scrollParent = Style.getScrollParent(e.target);
   const { x, y } = getScrollPosition(scrollParent);
 
-  const fragment = getFragmentFromSelection(editorState);
   editor.setClipboard(fragment);
 
   // Set `cut` mode to disable all event handling temporarily.
