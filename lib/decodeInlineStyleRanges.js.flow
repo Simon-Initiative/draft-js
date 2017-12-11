@@ -13,9 +13,8 @@
 
 'use strict';
 
-var UnicodeUtils = require('fbjs/lib/UnicodeUtils');
-
 var { OrderedSet } = require('immutable');
+var UnicodeUtils = require('fbjs/lib/UnicodeUtils');
 
 var { substr } = UnicodeUtils;
 

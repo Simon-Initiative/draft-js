@@ -13,11 +13,11 @@
 
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
-
 import type ContentBlock from './ContentBlock';
 import type ContentState from './ContentState';
 import type { DraftInsertionType } from './DraftInsertionType';
+
+const invariant = require('fbjs/lib/invariant');
 
 function moveBlockInContentState(contentState: ContentState, blockToBeMoved: ContentBlock, targetBlock: ContentBlock, insertionMode: DraftInsertionType): ContentState {
   invariant(blockToBeMoved.getKey() !== targetBlock.getKey(), 'Block cannot be moved next to itself.');

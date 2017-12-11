@@ -13,6 +13,9 @@
 
 'use strict';
 
+import type DraftEditor from './DraftEditor.react';
+import type SelectionState from './SelectionState';
+
 const DataTransfer = require('fbjs/lib/DataTransfer');
 const DraftModifier = require('./DraftModifier');
 const EditorState = require('./EditorState');
@@ -20,11 +23,8 @@ const EditorState = require('./EditorState');
 const findAncestorOffsetKey = require('./findAncestorOffsetKey');
 const getTextContentFromFiles = require('./getTextContentFromFiles');
 const getUpdatedSelectionState = require('./getUpdatedSelectionState');
-const nullthrows = require('fbjs/lib/nullthrows');
-
-import type DraftEditor from './DraftEditor.react';
-import type SelectionState from './SelectionState';
 const isEventHandled = require('./isEventHandled');
+const nullthrows = require('fbjs/lib/nullthrows');
 
 /**
  * Get a SelectionState for the supplied mouse event.
@@ -82,8 +82,7 @@ var DraftEditorDragHandler = {
       }
 
       getTextContentFromFiles(files, fileText => {
-        fileText && editor.update(insertTextAtSelection(editorState, nullthrows(dropSelection), // flow wtf
-        fileText));
+        fileText && editor.update(insertTextAtSelection(editorState, dropSelection, fileText));
       });
       return;
     }
