@@ -13,11 +13,18 @@
 
 'use strict';
 
+import type {DraftBlockRenderConfig} from 'DraftBlockRenderConfig';
+import type {DraftBlockRenderMap} from 'DraftBlockRenderMap';
+import type {DraftBlockType} from 'DraftBlockType';
+import type {DraftInlineStyle} from 'DraftInlineStyle';
+import type {EntityMap} from 'EntityMap';
+
 const CharacterMetadata = require('CharacterMetadata');
 const ContentBlock = require('ContentBlock');
 const DefaultDraftBlockRenderMap = require('DefaultDraftBlockRenderMap');
 const DraftEntity = require('DraftEntity');
 const Immutable = require('immutable');
+const {Set} = require('immutable');
 const URI = require('URI');
 
 const generateRandomKey = require('generateRandomKey');
@@ -25,14 +32,6 @@ const getSafeBodyFromHTML = require('getSafeBodyFromHTML');
 const invariant = require('invariant');
 const nullthrows = require('nullthrows');
 const sanitizeDraftText = require('sanitizeDraftText');
-
-const {Set} = require('immutable');
-
-import type {DraftBlockRenderMap} from 'DraftBlockRenderMap';
-import type {DraftBlockRenderConfig} from 'DraftBlockRenderConfig';
-import type {DraftBlockType} from 'DraftBlockType';
-import type {DraftInlineStyle} from 'DraftInlineStyle';
-import type {EntityMap} from 'EntityMap';
 
 var {
   List,
@@ -157,7 +156,7 @@ function getBlockMapSupportedTags(
   blockRenderMap: DraftBlockRenderMap,
 ): Array<string> {
   const unstyledElement = blockRenderMap.get('unstyled').element;
-  let tags = new Set([]);
+  let tags = Set([]);
 
   blockRenderMap.forEach((draftBlock: DraftBlockRenderConfig) => {
     if (draftBlock.aliasedElements) {
@@ -404,8 +403,12 @@ function genFragment(
         entityConfig[attr] = imageAttribute;
       }
     });
-    const imageURI = new URI(entityConfig.src).toString();
-    node.textContent = imageURI; // Output src if no decorator
+    // Forcing this node to have children because otherwise no entity will be
+    // created for this node.
+    // The child text node cannot just have a space or return as content -
+    // we strip those out.
+    // See https://github.com/facebook/draft-js/issues/231 for some context.
+    node.textContent = '\ud83d\udcf7';
 
     // TODO: update this when we remove DraftEntity entirely
     inEntity = DraftEntity.__create(
@@ -484,7 +487,10 @@ function genFragment(
       entityId = undefined;
     }
 
-    const { chunk: generatedChunk, entityMap: maybeUpdatedEntityMap } = genFragment(
+    const {
+      chunk: generatedChunk,
+      entityMap: maybeUpdatedEntityMap,
+    } = genFragment(
       newEntityMap,
       child,
       inlineStyle,
@@ -614,7 +620,12 @@ function convertFromHTMLtoContentBlocks(
   // example of how we try to do this in-browser, see getSafeBodyFromHTML.
 
   // TODO: replace DraftEntity with an OrderedMap here
-  var chunkData = getChunkForHTML(html, DOMBuilder, blockRenderMap, DraftEntity);
+  var chunkData = getChunkForHTML(
+    html,
+    DOMBuilder,
+    blockRenderMap,
+    DraftEntity,
+  );
 
   if (chunkData == null) {
     return null;
